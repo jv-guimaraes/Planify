@@ -1,5 +1,6 @@
 package com.planify.planify.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,4 +27,9 @@ public class Category {
     @OneToMany(mappedBy = "category")
     @JsonManagedReference
     private List<Transaction> transactions;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
 }

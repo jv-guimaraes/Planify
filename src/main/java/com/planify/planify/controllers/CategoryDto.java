@@ -1,4 +1,6 @@
 package com.planify.planify.controllers;
 
-public record CategoryDto(String name) {
+import java.util.UUID;
+
+public record CategoryDto(String name, UUID userId) {
 }

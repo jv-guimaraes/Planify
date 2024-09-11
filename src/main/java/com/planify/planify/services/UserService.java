@@ -29,6 +29,7 @@ public class UserService {
                 userDto.password(),
                 userDto.email(),
                 new ArrayList<>(),
+                new ArrayList<>(),
                 Instant.now(),
                 null);
         return userRepository.save(user).getUserId();

@@ -36,6 +36,10 @@ public class User {
     @JsonManagedReference
     private List<Transaction> transactions;
 
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<Category> categories;
+
     @CreationTimestamp
     private Instant creationTimestamp;
 

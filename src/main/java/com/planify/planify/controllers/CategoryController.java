@@ -19,9 +19,9 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody CategoryDto dto) {
+    public ResponseEntity<UUID> createCategory(@RequestBody CategoryDto dto) {
         var id = categoryService.createCategory(dto);
-        return ResponseEntity.created(URI.create("v1/categories/" + id.toString())).build();
+        return ResponseEntity.of(id);
     }
 
     @GetMapping("{id}")

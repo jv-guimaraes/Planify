@@ -13,15 +13,22 @@ import java.util.UUID;
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final UserService userService;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, UserService userService) {
         this.categoryRepository = categoryRepository;
+        this.userService = userService;
     }
 
-    public UUID createCategory(CategoryDto categoryDto) {
-        Category category = new Category(UUID.randomUUID(), categoryDto.name(), new ArrayList<>());
-        categoryRepository.save(category);
-        return category.getCategoryId();
+    public Optional<UUID> createCategory(CategoryDto dto) {
+        var user = userService.getById(dto.userId());
+        if (user.isPresent()) {
+            Category category = new Category(UUID.randomUUID(), dto.name(), new ArrayList<>(), user.get());
+            categoryRepository.save(category);
+            return Optional.of(category.getCategoryId());
+        } else {
+            return Optional.empty();
+        }
     }
 
     public List<Category> getAll() {
