@@ -1,5 +1,6 @@
 package com.planify.planify.controllers;
 
+import com.planify.planify.dtos.TransactionDto;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.services.TransactionService;
 import org.springframework.http.ResponseEntity;

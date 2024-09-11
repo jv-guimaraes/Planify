@@ -1,12 +1,12 @@
 package com.planify.planify.controllers;
 
+import com.planify.planify.dtos.CategoryDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.services.CategoryService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 

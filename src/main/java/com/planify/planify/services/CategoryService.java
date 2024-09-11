@@ -1,6 +1,6 @@
 package com.planify.planify.services;
 
-import com.planify.planify.controllers.CategoryDto;
+import com.planify.planify.dtos.CategoryDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.CategoryRepository;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 
 @Service
 public class CategoryService {

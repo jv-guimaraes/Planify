@@ -1,6 +1,6 @@
 package com.planify.planify.services;
 
-import com.planify.planify.controllers.TransactionDto;
+import com.planify.planify.dtos.TransactionDto;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.TransactionRepository;

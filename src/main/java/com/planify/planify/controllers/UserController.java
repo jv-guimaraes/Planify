@@ -1,5 +1,6 @@
 package com.planify.planify.controllers;
 
+import com.planify.planify.dtos.UserDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;

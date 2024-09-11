@@ -1,4 +1,4 @@
-package com.planify.planify.controllers;
+package com.planify.planify.dtos;
 
 public record UserDto(String username, String password, String email) {
 }

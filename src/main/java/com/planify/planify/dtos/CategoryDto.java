@@ -1,4 +1,4 @@
-package com.planify.planify.controllers;
+package com.planify.planify.dtos;
 
 import java.util.UUID;
 
