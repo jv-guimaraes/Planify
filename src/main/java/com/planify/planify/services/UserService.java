@@ -74,4 +74,10 @@ public class UserService {
         var user = userRepository.findById(id);
         return user.map(categoryService::getByUser);
     }
+
+    public void deleteAll() {
+        transactionService.deleteAll();
+        categoryService.deleteAll();
+        userRepository.deleteAll();
+    }
 }

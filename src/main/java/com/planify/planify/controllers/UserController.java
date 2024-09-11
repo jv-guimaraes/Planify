@@ -56,4 +56,10 @@ public class UserController {
     public ResponseEntity<List<Category>> getCategories(@PathVariable("id") UUID id) {
         return ResponseEntity.of(userService.getCategoriesByUserId(id));
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAll() {
+        userService.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
 }

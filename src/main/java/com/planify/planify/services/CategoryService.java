@@ -61,4 +61,8 @@ public class CategoryService {
     public List<Category> getByUser(User user) {
         return categoryRepository.findByUser(user);
     }
+
+    public void deleteAll() {
+        categoryRepository.deleteAll();
+    }
 }
