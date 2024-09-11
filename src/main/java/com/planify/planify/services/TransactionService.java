@@ -3,9 +3,8 @@ package com.planify.planify.services;
 import com.planify.planify.controllers.TransactionDto;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
-import com.planify.planify.repositories.CategoryRepository;
 import com.planify.planify.repositories.TransactionRepository;
-import com.planify.planify.repositories.UserRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,19 +12,19 @@ import java.util.Optional;
 
 @Service
 public class TransactionService {
-    private TransactionRepository transactionRepository;
-    private UserRepository userRepository;
-    private CategoryRepository categoryRepository;
+    private final TransactionRepository transactionRepository;
+    private final UserService userService;
+    private final CategoryService categoryService;
 
-    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
+    public TransactionService(TransactionRepository transactionRepository, @Lazy UserService userService, @Lazy CategoryService categoryService) {
         this.transactionRepository = transactionRepository;
-        this.userRepository = userRepository;
-        this.categoryRepository = categoryRepository;
+        this.userService = userService;
+        this.categoryService = categoryService;
     }
 
     public Optional<Transaction> createTransaction(TransactionDto dto) {
-        var userRes = userRepository.findById(dto.user());
-        var categoryRes = categoryRepository.findById(dto.category());
+        var userRes = userService.getById(dto.user());
+        var categoryRes = categoryService.getById(dto.category());
         if (userRes.isPresent() && categoryRes.isPresent()) {
             var user = userRes.get();
             var category = categoryRes.get();

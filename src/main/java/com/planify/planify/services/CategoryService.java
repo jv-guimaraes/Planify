@@ -2,20 +2,23 @@ package com.planify.planify.services;
 
 import com.planify.planify.controllers.CategoryDto;
 import com.planify.planify.entities.Category;
+import com.planify.planify.entities.User;
 import com.planify.planify.repositories.CategoryRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserService userService;
 
-    public CategoryService(CategoryRepository categoryRepository, UserService userService) {
+    public CategoryService(CategoryRepository categoryRepository, @Lazy UserService userService) {
         this.categoryRepository = categoryRepository;
         this.userService = userService;
     }
@@ -53,5 +56,9 @@ public class CategoryService {
         } else {
             return Optional.empty();
         }
+    }
+
+    public List<Category> getByUser(User user) {
+        return categoryRepository.findByUser(user);
     }
 }

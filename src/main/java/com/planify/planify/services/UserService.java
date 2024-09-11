@@ -1,9 +1,11 @@
 package com.planify.planify.services;
 
 import com.planify.planify.controllers.UserDto;
+import com.planify.planify.entities.Category;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.UserRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,10 +18,12 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final TransactionService transactionService;
+    private final CategoryService categoryService;
 
-    public UserService(UserRepository userRepository, TransactionService transactionService) {
+    public UserService(UserRepository userRepository, @Lazy TransactionService transactionService, @Lazy CategoryService categoryService) {
         this.userRepository = userRepository;
         this.transactionService = transactionService;
+        this.categoryService = categoryService;
     }
 
     public UUID createUser(UserDto userDto) {
@@ -62,7 +66,12 @@ public class UserService {
     }
 
     public Optional<List<Transaction>> getTransactionsByUserId(UUID id) {
-        var res = userRepository.findById(id);
-        return res.map(transactionService::getByUser);
+        var user = userRepository.findById(id);
+        return user.map(transactionService::getByUser);
+    }
+
+    public Optional<List<Category>> getCategoriesByUserId(UUID id) {
+        var user = userRepository.findById(id);
+        return user.map(categoryService::getByUser);
     }
 }

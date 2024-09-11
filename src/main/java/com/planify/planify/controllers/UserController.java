@@ -1,5 +1,6 @@
 package com.planify.planify.controllers;
 
+import com.planify.planify.entities.Category;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
 import com.planify.planify.services.UserService;
@@ -49,5 +50,10 @@ public class UserController {
     @GetMapping("/{id}/transactions")
     public ResponseEntity<List<Transaction>> getTransactions(@PathVariable("id") UUID id) {
         return ResponseEntity.of(userService.getTransactionsByUserId(id));
+    }
+
+    @GetMapping("/{id}/categories")
+    public ResponseEntity<List<Category>> getCategories(@PathVariable("id") UUID id) {
+        return ResponseEntity.of(userService.getCategoriesByUserId(id));
     }
 }

@@ -2,6 +2,7 @@ package com.planify.planify.controllers;
 
 import com.planify.planify.entities.Category;
 import com.planify.planify.services.CategoryService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class CategoryController {
     private final CategoryService categoryService;
 
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(@Lazy CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
