@@ -4,8 +4,14 @@ import com.planify.planify.dtos.UserDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
+import com.planify.planify.security.JwtService;
 import com.planify.planify.services.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -15,11 +21,41 @@ import java.util.UUID;
 @RestController
 @RequestMapping("v1/users")
 public class UserController {
-    private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+
+    public UserController(UserService userService, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
+        userService.registerUser(userDto);
+        return ResponseEntity.ok("User registered successfully!");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@RequestBody UserDto userDto) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userDto.email(), userDto.password())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Obtém o usuário autenticado
+        User user = userService.findByEmail(userDto.email())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Gera o token JWT incluindo o ID do usuário
+        String token = jwtService.generateToken(user.getUserId(), authentication.getName());
+
+        // Retorna o token na resposta
+        return ResponseEntity.ok(token);
+    }
+
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody UserDto dto) {
