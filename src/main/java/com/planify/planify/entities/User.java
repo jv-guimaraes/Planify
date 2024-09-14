@@ -23,13 +23,13 @@ public class User {
     @Column(name = "user_id")
     private UUID userId;
 
-    @Column(name = "username")
+    @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @OneToMany(mappedBy = "user")

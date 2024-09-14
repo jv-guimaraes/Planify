@@ -52,12 +52,16 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
-    public void registerUser(UserDto userDto) {
+    public boolean registerUser(UserDto userDto) {
+        if (userDto.username() == null) return false;
+        if (userDto.email() == null) return false;
+        if (userDto.password() == null) return false;
         User user = new User();
         user.setUsername(userDto.username());
         user.setEmail(userDto.email());
         user.setPassword(passwordEncoder.encode(userDto.password()));
         userRepository.save(user);
+        return true;
     }
 
     //    ------------------ CRUD ------------------

@@ -34,12 +34,19 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
-        userService.registerUser(userDto);
-        return ResponseEntity.ok("User registered successfully!");
+        if (userService.registerUser(userDto)) {
+            return ResponseEntity.ok("User registered successfully!");
+        } else {
+            return ResponseEntity.badRequest().body("User was not registered!");
+        }
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserDto userDto) {
+        if (userDto.email() == null || userDto.password() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userDto.email(), userDto.password())
         );
