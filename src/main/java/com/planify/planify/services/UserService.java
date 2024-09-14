@@ -6,6 +6,10 @@ import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.UserRepository;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -15,17 +19,48 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
+
     private final UserRepository userRepository;
     private final TransactionService transactionService;
     private final CategoryService categoryService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, @Lazy TransactionService transactionService, @Lazy CategoryService categoryService) {
+
+    public UserService(UserRepository userRepository,
+                       @Lazy TransactionService transactionService,
+                       @Lazy CategoryService categoryService,
+                       @Lazy PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.transactionService = transactionService;
         this.categoryService = categoryService;
+        this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getEmail())
+                .password(user.getPassword())
+                .roles("USER")
+                .build();
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public void registerUser(UserDto userDto) {
+        User user = new User();
+        user.setUsername(userDto.username());
+        user.setEmail(userDto.email());
+        user.setPassword(passwordEncoder.encode(userDto.password()));
+        userRepository.save(user);
+    }
+
+    //    ------------------ CRUD ------------------
     public UUID createUser(UserDto userDto) {
         var user = new User(
                 UUID.randomUUID(),
