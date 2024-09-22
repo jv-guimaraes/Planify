@@ -1,6 +1,8 @@
 package com.planify.planify.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.planify.planify.dtos.CategoryResponseDto;
+import com.planify.planify.dtos.TransactionResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,5 +49,9 @@ public class Transaction {
     @JoinColumn(name = "category_id")
     @JsonBackReference
     private Category category;
+
+    public TransactionResponseDto toResponseDto() {
+        return new TransactionResponseDto(transactionId, date, sender, recipient, value, isExpense, category.toResponseDto());
+    }
 
 }

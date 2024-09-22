@@ -1,6 +1,6 @@
 package com.planify.planify.controllers;
 
-import com.planify.planify.dtos.CategoryDto;
+import com.planify.planify.dtos.CategoryRequestDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.services.CategoryService;
 import org.springframework.context.annotation.Lazy;
@@ -20,7 +20,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<UUID> createCategory(@RequestBody CategoryDto dto) {
+    public ResponseEntity<UUID> createCategory(@RequestBody CategoryRequestDto dto) {
         var id = categoryService.createCategory(dto);
         return ResponseEntity.of(id);
     }
@@ -42,7 +42,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateById(@PathVariable("id") UUID id, @RequestBody CategoryDto dto) {
+    public ResponseEntity<Category> updateById(@PathVariable("id") UUID id, @RequestBody CategoryRequestDto dto) {
         return ResponseEntity.of(categoryService.updateById(id, dto));
     }
 }

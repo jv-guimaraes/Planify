@@ -1,6 +1,7 @@
 package com.planify.planify.controllers;
 
-import com.planify.planify.dtos.UserDto;
+import com.planify.planify.dtos.UserRequestDto;
+import com.planify.planify.dtos.UserResponseDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<String> registerUser(@RequestBody UserRequestDto userDto) {
         if (userService.registerUser(userDto)) {
             return ResponseEntity.ok("User registered successfully!");
         } else {
@@ -42,7 +43,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<String> loginUser(@RequestBody UserRequestDto userDto) {
         if (userDto.email() == null || userDto.password() == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -65,19 +66,20 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody UserDto dto) {
+    public ResponseEntity<User> createUser(@RequestBody UserRequestDto dto) {
         var id = userService.createUser(dto);
         return ResponseEntity.created(URI.create("v1/users/" + id.toString())).build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getById(@PathVariable("id") UUID id) {
-        return ResponseEntity.of(userService.getById(id));
+    public ResponseEntity<UserResponseDto> getById(@PathVariable("id") UUID id) {
+        return ResponseEntity.of(userService.getById(id).map(User::toResponseDto));
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAll() {
-        return ResponseEntity.ok(userService.getAll());
+    public ResponseEntity<List<UserResponseDto>> getAll() {
+        var users = userService.getAll();
+        return ResponseEntity.ok(users.stream().map(User::toResponseDto).toList());
     }
 
     @DeleteMapping("/{id}")
@@ -87,7 +89,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateById(@PathVariable("id") UUID id, @RequestBody UserDto dto) {
+    public ResponseEntity<User> updateById(@PathVariable("id") UUID id, @RequestBody UserRequestDto dto) {
         return ResponseEntity.of(userService.updateById(id, dto));
     }
 

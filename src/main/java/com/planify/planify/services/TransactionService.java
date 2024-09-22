@@ -1,6 +1,6 @@
 package com.planify.planify.services;
 
-import com.planify.planify.dtos.TransactionDto;
+import com.planify.planify.dtos.TransactionRequestDto;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.TransactionRepository;
@@ -22,7 +22,7 @@ public class TransactionService {
         this.categoryService = categoryService;
     }
 
-    public Optional<Transaction> createTransaction(TransactionDto dto) {
+    public Optional<Transaction> createTransaction(TransactionRequestDto dto) {
         var userRes = userService.getById(dto.user());
         var categoryRes = categoryService.getById(dto.category());
         if (userRes.isPresent() && categoryRes.isPresent()) {

@@ -1,6 +1,7 @@
 package com.planify.planify.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.planify.planify.dtos.UserResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,4 +46,10 @@ public class User {
 
     @UpdateTimestamp
     private Instant updateTimestamp;
+
+    public UserResponseDto toResponseDto() {
+        var responseTransactions = transactions.stream().map(Transaction::toResponseDto).toList();
+        var responseCategories = categories.stream().map(Category::toResponseDto).toList();
+        return new UserResponseDto(userId, username, email, responseTransactions, responseCategories, creationTimestamp, updateTimestamp);
+    }
 }

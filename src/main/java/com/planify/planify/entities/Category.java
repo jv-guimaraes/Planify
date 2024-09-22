@@ -2,6 +2,7 @@ package com.planify.planify.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.planify.planify.dtos.CategoryResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,4 +33,8 @@ public class Category {
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
+
+    public CategoryResponseDto toResponseDto() {
+        return new CategoryResponseDto(categoryId, name);
+    }
 }

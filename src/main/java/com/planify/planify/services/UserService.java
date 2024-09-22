@@ -1,6 +1,6 @@
 package com.planify.planify.services;
 
-import com.planify.planify.dtos.UserDto;
+import com.planify.planify.dtos.UserRequestDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
@@ -52,7 +52,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
-    public boolean registerUser(UserDto userDto) {
+    public boolean registerUser(UserRequestDto userDto) {
         if (userDto.username() == null) return false;
         if (userDto.email() == null) return false;
         if (userDto.password() == null) return false;
@@ -65,7 +65,7 @@ public class UserService implements UserDetailsService {
     }
 
     //    ------------------ CRUD ------------------
-    public UUID createUser(UserDto userDto) {
+    public UUID createUser(UserRequestDto userDto) {
         var user = new User(
                 UUID.randomUUID(),
                 userDto.username(),
@@ -90,7 +90,7 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(userId);
     }
 
-    public Optional<User> updateById(UUID userId, UserDto userDto) {
+    public Optional<User> updateById(UUID userId, UserRequestDto userDto) {
         var result = userRepository.findById(userId);
         if (result.isPresent()) {
             var user = result.get();

@@ -1,6 +1,7 @@
 package com.planify.planify.controllers;
 
-import com.planify.planify.dtos.TransactionDto;
+import com.planify.planify.dtos.TransactionRequestDto;
+import com.planify.planify.dtos.TransactionResponseDto;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.services.TransactionService;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +18,14 @@ public class TransactionController {
     }
 
     @PostMapping("v1/transactions")
-    public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionDto dto) {
+    public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequestDto dto) {
         return ResponseEntity.of(transactionService.createTransaction(dto));
     }
 
    @GetMapping("v1/transactions")
-   public  ResponseEntity<List<Transaction>> getAll() {
-        return ResponseEntity.ok(transactionService.getAll());
+   public  ResponseEntity<List<TransactionResponseDto>> getAll() {
+        var transactions = transactionService.getAll();
+        return ResponseEntity.ok(transactions.stream().map(Transaction::toResponseDto).toList());
    }
 
    @DeleteMapping("v1/transactions")

@@ -1,6 +1,6 @@
 package com.planify.planify.services;
 
-import com.planify.planify.dtos.CategoryDto;
+import com.planify.planify.dtos.CategoryRequestDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.CategoryRepository;
@@ -22,7 +22,7 @@ public class CategoryService {
         this.userService = userService;
     }
 
-    public Optional<UUID> createCategory(CategoryDto dto) {
+    public Optional<UUID> createCategory(CategoryRequestDto dto) {
         var user = userService.getById(dto.userId());
         if (user.isPresent()) {
             Category category = new Category(UUID.randomUUID(), dto.name(), new ArrayList<>(), user.get());
@@ -45,7 +45,7 @@ public class CategoryService {
         return categoryRepository.findById(categoryId);
     }
 
-    public Optional<Category> updateById(UUID id, CategoryDto dto) {
+    public Optional<Category> updateById(UUID id, CategoryRequestDto dto) {
         var res = categoryRepository.findById(id);
         if (res.isPresent()) {
             var category = res.get();
