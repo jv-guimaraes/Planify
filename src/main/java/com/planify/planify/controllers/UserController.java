@@ -1,5 +1,6 @@
 package com.planify.planify.controllers;
 
+import com.planify.planify.dtos.TransactionResponseDto;
 import com.planify.planify.dtos.UserRequestDto;
 import com.planify.planify.dtos.UserResponseDto;
 import com.planify.planify.entities.Category;
@@ -7,6 +8,9 @@ import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
 import com.planify.planify.security.JwtService;
 import com.planify.planify.services.UserService;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +19,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 import java.net.URI;
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -107,5 +114,27 @@ public class UserController {
     public ResponseEntity<Void> deleteAll() {
         userService.deleteAll();
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/export-transactions")
+    public ResponseEntity<ByteArrayResource> exportCsv(Principal principal) {
+        User user = userService.findByEmail(principal.getName()).orElseThrow();
+        var transactions = user.getTransactions().stream().map(Transaction::toResponseDto).toList();
+
+        // Gerar o CSV
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintWriter writer = new PrintWriter(outputStream);
+        writer.println("date,sender,recipient,value,is_expense,category");
+        for (TransactionResponseDto t : transactions) {
+            writer.printf("%s,%s,%s,\"%.2f\",%s,%s\n", t.date(), t.sender(), t.recipient(), t.value(), t.isExpense(), t.category().name());
+        }
+        writer.flush();
+        ByteArrayResource resource = new ByteArrayResource(outputStream.toByteArray());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=transactions.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .contentLength(resource.contentLength())
+                .body(resource);
     }
 }
