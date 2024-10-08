@@ -10,7 +10,6 @@ public record TransactionRequestDto(
         String recipient,
         BigDecimal value,
         boolean isExpense,
-        UUID user,
         UUID category
 ) {
 }

@@ -1,6 +1,8 @@
 package com.planify.planify.services;
 
 import com.planify.planify.dtos.TransactionRequestDto;
+import com.planify.planify.dtos.TransactionResponseDto;
+import com.planify.planify.entities.Category;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.TransactionRepository;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TransactionService {
@@ -22,9 +25,10 @@ public class TransactionService {
         this.categoryService = categoryService;
     }
 
-    public Optional<Transaction> createTransaction(TransactionRequestDto dto) {
-        var userRes = userService.getById(dto.user());
+    public Optional<Transaction> createTransaction(UUID userId, TransactionRequestDto dto) {
+        var userRes = userService.getById(userId);
         var categoryRes = categoryService.getById(dto.category());
+        System.out.println(dto);
         if (userRes.isPresent() && categoryRes.isPresent()) {
             var user = userRes.get();
             var category = categoryRes.get();
@@ -38,7 +42,6 @@ public class TransactionService {
             transaction.setUser(user);
             transaction.setCategory(category);
             transactionRepository.save(transaction);
-
             return Optional.of(transaction);
         } else {
             return Optional.empty();
@@ -55,5 +58,18 @@ public class TransactionService {
 
     public List<Transaction> getByUser(User user) {
         return transactionRepository.findByUser(user);
+    }
+
+    public Optional<Transaction> findById(UUID id) {
+        return transactionRepository.findById(id);
+    }
+
+    public boolean deleteById(UUID id) {
+        if (transactionRepository.findById(id).isPresent()) {
+            transactionRepository.deleteById(id);
+            return true;
+        } else {
+            return  false;
+        }
     }
 }

@@ -22,12 +22,12 @@ public class CategoryService {
         this.userService = userService;
     }
 
-    public Optional<UUID> createCategory(CategoryRequestDto dto) {
-        var user = userService.getById(dto.userId());
+    public Optional<Category> createCategory(UUID userId, CategoryRequestDto dto) {
+        var user = userService.getById(userId);
         if (user.isPresent()) {
             Category category = new Category(UUID.randomUUID(), dto.name(), new ArrayList<>(), user.get());
             categoryRepository.save(category);
-            return Optional.of(category.getCategoryId());
+            return Optional.of(category);
         } else {
             return Optional.empty();
         }

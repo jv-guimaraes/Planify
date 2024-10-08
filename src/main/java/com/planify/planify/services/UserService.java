@@ -87,6 +87,13 @@ public class UserService implements UserDetailsService {
     }
 
     public void deleteById(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        for (Transaction t : user.getTransactions()) {
+            transactionService.deleteById(t.getTransactionId());
+        }
+        for (Category c : user.getCategories()) {
+            categoryService.deleteById(c.getCategoryId());
+        }
         userRepository.deleteById(userId);
     }
 

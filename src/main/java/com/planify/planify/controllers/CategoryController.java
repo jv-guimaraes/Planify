@@ -3,10 +3,12 @@ package com.planify.planify.controllers;
 import com.planify.planify.dtos.CategoryRequestDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.services.CategoryService;
+import com.planify.planify.services.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,14 +16,17 @@ import java.util.UUID;
 @RequestMapping("v1/categories")
 public class CategoryController {
     private final CategoryService categoryService;
+    private final UserService userService;
 
-    public CategoryController(@Lazy CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, UserService userService) {
         this.categoryService = categoryService;
+        this.userService = userService;
     }
 
     @PostMapping
-    public ResponseEntity<UUID> createCategory(@RequestBody CategoryRequestDto dto) {
-        var id = categoryService.createCategory(dto);
+    public ResponseEntity<Category> createCategory(Principal principal, @RequestBody CategoryRequestDto dto) {
+        var user = userService.findByEmail(principal.getName()).orElseThrow();
+        var id = categoryService.createCategory(user.getUserId(), dto);
         return ResponseEntity.of(id);
     }
 
