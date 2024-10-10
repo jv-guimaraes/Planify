@@ -11,4 +11,6 @@ import java.util.UUID;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
     public List<Transaction> findByUser(User user);
+
+    public List<Transaction> findByUserOrderByDate(User user);
 }

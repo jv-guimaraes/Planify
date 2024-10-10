@@ -2,13 +2,16 @@ package com.planify.planify.services;
 
 import com.planify.planify.dtos.TransactionRequestDto;
 import com.planify.planify.dtos.TransactionResponseDto;
-import com.planify.planify.entities.Category;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.TransactionRepository;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,6 +26,23 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
         this.userService = userService;
         this.categoryService = categoryService;
+    }
+
+    public ByteArrayResource exportCsv(Principal principal) {
+        User user = userService.findByEmail(principal.getName()).orElseThrow();
+        var transactions = transactionRepository.findByUserOrderByDate(user)
+                .stream().map(Transaction::toResponseDto).toList();
+
+        // Gerar o CSV
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintWriter writer = new PrintWriter(outputStream);
+        writer.println("date,sender,recipient,value,is_expense,category");
+        for (TransactionResponseDto t : transactions) {
+            var type = t.isExpense() ? "expense" : "income";
+            writer.printf("%s,%s,%s,\"%.2f\",%s,%s\n", t.date(), t.sender(), t.recipient(), t.value(), type, t.category().name());
+        }
+        writer.flush();
+        return new ByteArrayResource(outputStream.toByteArray());
     }
 
     public Optional<Transaction> createTransaction(UUID userId, TransactionRequestDto dto) {
