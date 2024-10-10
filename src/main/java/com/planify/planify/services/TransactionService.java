@@ -1,7 +1,6 @@
 package com.planify.planify.services;
 
 import com.planify.planify.dtos.TransactionRequestDto;
-import com.planify.planify.dtos.TransactionResponseDto;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.TransactionRepository;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,19 +28,24 @@ public class TransactionService {
         this.categoryService = categoryService;
     }
 
-    public ByteArrayResource exportCsv(Principal principal) {
+    public ByteArrayResource exportCsv(Principal principal, LocalDate startDate, LocalDate endDate) {
         User user = userService.findByEmail(principal.getName()).orElseThrow();
-        var transactions = transactionRepository.findByUserOrderByDate(user)
-                .stream().map(Transaction::toResponseDto).toList();
+        List<Transaction> transactions;
+        if (startDate != null && endDate != null) {
+            transactions = transactionRepository.findByUserAndDateBetweenOrderByDate(user, startDate, endDate);
+        } else {
+            transactions = transactionRepository.findByUserOrderByDate(user);
+        }
 
         // Gerar o CSV
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintWriter writer = new PrintWriter(outputStream);
         writer.println("date,sender,recipient,value,is_expense,category");
-        for (TransactionResponseDto t : transactions) {
+        transactions.stream().map(Transaction::toResponseDto).forEach(t -> {
             var type = t.isExpense() ? "expense" : "income";
-            writer.printf("%s,%s,%s,\"%.2f\",%s,%s\n", t.date(), t.sender(), t.recipient(), t.value(), type, t.category().name());
-        }
+            writer.printf("%s,%s,%s,\"%.2f\",%s,%s\n", t.date(), t.sender(), t.recipient(),
+                    t.value(), type, t.category().name());
+        });
         writer.flush();
         return new ByteArrayResource(outputStream.toByteArray());
     }
@@ -89,7 +94,7 @@ public class TransactionService {
             transactionRepository.deleteById(id);
             return true;
         } else {
-            return  false;
+            return false;
         }
     }
 }

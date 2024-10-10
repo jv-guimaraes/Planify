@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,12 +33,12 @@ public class TransactionController {
         return ResponseEntity.of(transactionService.createTransaction(user.getUserId(), dto));
     }
 
-   @GetMapping
-   public  ResponseEntity<List<TransactionResponseDto>> getAll(Principal principal) {
+    @GetMapping
+    public ResponseEntity<List<TransactionResponseDto>> getAll(Principal principal) {
         var user = userService.findByEmail(principal.getName()).orElseThrow();
         var transactions = transactionService.getByUser(user);
         return ResponseEntity.ok(transactions.stream().map(Transaction::toResponseDto).toList());
-   }
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getById(Principal principal, @PathVariable("id") UUID id) {
@@ -57,11 +58,13 @@ public class TransactionController {
     public ResponseEntity<Void> deleteAll() {
         transactionService.deleteAll();
         return ResponseEntity.noContent().build();
-   }
+    }
 
     @GetMapping("/export")
-    public ResponseEntity<ByteArrayResource> exportCsv(Principal principal) {
-        ByteArrayResource resource = transactionService.exportCsv(principal);
+    public ResponseEntity<ByteArrayResource> exportCsv(Principal principal,
+                                                       @RequestParam(required = false) LocalDate startDate,
+                                                       @RequestParam(required = false) LocalDate endDate) {
+        ByteArrayResource resource = transactionService.exportCsv(principal, startDate, endDate);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=transactions.csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
