@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "tb_categories")
-public class Category {
+public class Category implements Comparable<Category> {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "category_id")
@@ -36,5 +36,10 @@ public class Category {
 
     public CategoryResponseDto toResponseDto() {
         return new CategoryResponseDto(categoryId, name);
+    }
+
+    @Override
+    public int compareTo(Category o) {
+        return name.compareTo(o.getName());
     }
 }

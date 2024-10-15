@@ -27,29 +27,6 @@ public class TransactionService {
         this.userService = userService;
         this.categoryService = categoryService;
     }
-
-    public ByteArrayResource exportCsv(Principal principal, LocalDate startDate, LocalDate endDate) {
-        User user = userService.findByEmail(principal.getName()).orElseThrow();
-        List<Transaction> transactions;
-        if (startDate != null && endDate != null) {
-            transactions = transactionRepository.findByUserAndDateBetweenOrderByDate(user, startDate, endDate);
-        } else {
-            transactions = transactionRepository.findByUserOrderByDate(user);
-        }
-
-        // Gerar o CSV
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        PrintWriter writer = new PrintWriter(outputStream);
-        writer.println("date,sender,recipient,value,is_expense,category");
-        transactions.stream().map(Transaction::toResponseDto).forEach(t -> {
-            var type = t.isExpense() ? "expense" : "income";
-            writer.printf("%s,%s,%s,\"%.2f\",%s,%s\n", t.date(), t.sender(), t.recipient(),
-                    t.value(), type, t.category().name());
-        });
-        writer.flush();
-        return new ByteArrayResource(outputStream.toByteArray());
-    }
-
     public Optional<Transaction> createTransaction(UUID userId, TransactionRequestDto dto) {
         var userRes = userService.getById(userId);
         var categoryRes = categoryService.getById(dto.category());

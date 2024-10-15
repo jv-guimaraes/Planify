@@ -60,15 +60,4 @@ public class TransactionController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/export")
-    public ResponseEntity<ByteArrayResource> exportCsv(Principal principal,
-                                                       @RequestParam(required = false) LocalDate startDate,
-                                                       @RequestParam(required = false) LocalDate endDate) {
-        ByteArrayResource resource = transactionService.exportCsv(principal, startDate, endDate);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=transactions.csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .contentLength(resource.contentLength())
-                .body(resource);
-    }
 }
