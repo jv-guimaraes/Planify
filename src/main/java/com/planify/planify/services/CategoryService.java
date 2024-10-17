@@ -4,7 +4,7 @@ import com.planify.planify.dtos.CategoryRequestDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.CategoryRepository;
-import org.springframework.context.annotation.Lazy;
+import com.planify.planify.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,16 +14,16 @@ import java.util.UUID;
 
 @Service
 public class CategoryService {
+    private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
-    private final UserService userService;
 
-    public CategoryService(CategoryRepository categoryRepository, @Lazy UserService userService) {
+    public CategoryService(UserRepository userRepository, CategoryRepository categoryRepository) {
+        this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
-        this.userService = userService;
     }
 
     public Optional<Category> createCategory(UUID userId, CategoryRequestDto dto) {
-        var user = userService.getById(userId);
+        var user = userRepository.findById(userId);
         if (user.isPresent()) {
             Category category = new Category(null, dto.name(), new ArrayList<>(), user.get());
             categoryRepository.save(category);
@@ -33,15 +33,11 @@ public class CategoryService {
         }
     }
 
-    public List<Category> getAll() {
-        return categoryRepository.findAll();
-    }
-
     public void deleteById(UUID categoryId) {
         categoryRepository.deleteById(categoryId);
     }
 
-    public Optional<Category> getById(UUID categoryId) {
+    public Optional<Category> findById(UUID categoryId) {
         return categoryRepository.findById(categoryId);
     }
 
@@ -57,11 +53,7 @@ public class CategoryService {
         }
     }
 
-    public List<Category> getByUser(User user) {
+    public List<Category> findByUser(User user) {
         return categoryRepository.findByUser(user);
-    }
-
-    public void deleteAll() {
-        categoryRepository.deleteAll();
     }
 }

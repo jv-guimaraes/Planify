@@ -4,17 +4,15 @@ import com.planify.planify.dtos.UserRequestDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
+import com.planify.planify.repositories.CategoryRepository;
+import com.planify.planify.repositories.TransactionRepository;
 import com.planify.planify.repositories.UserRepository;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,18 +20,14 @@ import java.util.UUID;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final TransactionService transactionService;
-    private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
+    private final TransactionRepository transactionRepository;
     private final PasswordEncoder passwordEncoder;
 
-
-    public UserService(UserRepository userRepository,
-                       @Lazy TransactionService transactionService,
-                       @Lazy CategoryService categoryService,
-                       @Lazy PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, CategoryRepository categoryRepository, TransactionRepository transactionRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.transactionService = transactionService;
-        this.categoryService = categoryService;
+        this.categoryRepository = categoryRepository;
+        this.transactionRepository = transactionRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -64,21 +58,13 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    public Optional<User> getById(UUID userId) {
-        return userRepository.findById(userId);
-    }
-
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
-
     public void deleteById(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow();
         for (Transaction t : user.getTransactions()) {
-            transactionService.deleteById(t.getTransactionId());
+            transactionRepository.deleteById(t.getTransactionId());
         }
         for (Category c : user.getCategories()) {
-            categoryService.deleteById(c.getCategoryId());
+            categoryRepository.deleteById(c.getCategoryId());
         }
         userRepository.deleteById(userId);
     }

@@ -3,15 +3,11 @@ package com.planify.planify.services;
 import com.planify.planify.dtos.TransactionRequestDto;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
+import com.planify.planify.repositories.CategoryRepository;
 import com.planify.planify.repositories.TransactionRepository;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.core.io.ByteArrayResource;
+import com.planify.planify.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
-import java.security.Principal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,17 +15,18 @@ import java.util.UUID;
 @Service
 public class TransactionService {
     private final TransactionRepository transactionRepository;
-    private final UserService userService;
-    private final CategoryService categoryService;
+    private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
-    public TransactionService(TransactionRepository transactionRepository, @Lazy UserService userService, @Lazy CategoryService categoryService) {
+    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.transactionRepository = transactionRepository;
-        this.userService = userService;
-        this.categoryService = categoryService;
+        this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
     }
+
     public Optional<Transaction> createTransaction(UUID userId, TransactionRequestDto dto) {
-        var userRes = userService.getById(userId);
-        var categoryRes = categoryService.getById(dto.category());
+        var userRes = userRepository.findById(userId);
+        var categoryRes = categoryRepository.findById(dto.category());
         System.out.println(dto);
         if (userRes.isPresent() && categoryRes.isPresent()) {
             var user = userRes.get();
@@ -50,7 +47,7 @@ public class TransactionService {
         }
     }
 
-    public List<Transaction> getByUser(User user) {
+    public List<Transaction> findByUser(User user) {
         return transactionRepository.findByUser(user);
     }
 

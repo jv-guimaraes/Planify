@@ -1,7 +1,5 @@
 package com.planify.planify.dtos;
 
-import com.planify.planify.entities.Category;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

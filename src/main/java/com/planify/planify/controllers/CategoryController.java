@@ -4,7 +4,6 @@ import com.planify.planify.dtos.CategoryRequestDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.services.CategoryService;
 import com.planify.planify.services.UserService;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,12 +31,13 @@ public class CategoryController {
 
     @GetMapping("{id}")
     public ResponseEntity<Category> getById(@PathVariable("id") UUID id) {
-        return ResponseEntity.of(categoryService.getById(id));
+        return ResponseEntity.of(categoryService.findById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAll() {
-        return ResponseEntity.ok(categoryService.getAll());
+    public ResponseEntity<List<Category>> getAll(Principal principal) {
+        var user = userService.findByEmail(principal.getName()).orElseThrow();
+        return ResponseEntity.ok(categoryService.findByUser(user));
     }
 
     @DeleteMapping("/{id}")

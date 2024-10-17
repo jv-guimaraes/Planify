@@ -1,7 +1,6 @@
 package com.planify.planify.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.planify.planify.dtos.CategoryResponseDto;
 import com.planify.planify.dtos.TransactionResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

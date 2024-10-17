@@ -5,14 +5,10 @@ import com.planify.planify.dtos.TransactionResponseDto;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.services.TransactionService;
 import com.planify.planify.services.UserService;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,7 +32,7 @@ public class TransactionController {
     @GetMapping
     public ResponseEntity<List<TransactionResponseDto>> getAll(Principal principal) {
         var user = userService.findByEmail(principal.getName()).orElseThrow();
-        var transactions = transactionService.getByUser(user);
+        var transactions = transactionService.findByUser(user);
         return ResponseEntity.ok(transactions.stream().map(Transaction::toResponseDto).toList());
     }
 

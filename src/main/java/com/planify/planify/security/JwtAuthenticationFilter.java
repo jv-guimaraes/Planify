@@ -39,8 +39,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
 
         String authHeader = httpRequest.getHeader("Authorization");
-        String token = null;
-        String username = null;
+        String token;
+        String username;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);  // Remove o prefixo 'Bearer ' do token
