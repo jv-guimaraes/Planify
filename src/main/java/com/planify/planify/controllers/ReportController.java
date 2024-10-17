@@ -1,8 +1,6 @@
 package com.planify.planify.controllers;
 
-import com.planify.planify.repositories.TransactionRepository;
 import com.planify.planify.services.ReportService;
-import com.planify.planify.services.UserService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,19 +18,14 @@ import java.time.LocalDate;
 @RequestMapping("v1/report")
 public class ReportController {
     private final ReportService reportService;
-    private final UserService userService;
-    private final TransactionRepository transactionRepository;
 
-    public ReportController(ReportService reportService, UserService userService, TransactionRepository transactionRepository) {
+    public ReportController(ReportService reportService) {
         this.reportService = reportService;
-        this.userService = userService;
-        this.transactionRepository = transactionRepository;
     }
 
     @GetMapping("/export-pdf")
     public ResponseEntity<ByteArrayResource> exportPdf(Principal principal) throws IOException {
-        var user = userService.findByEmail(principal.getName()).orElseThrow();
-        var resource = reportService.generateReport(transactionRepository.findByUserOrderByDate(user));
+        var resource = reportService.generateReport(principal);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=document.pdf")
                 .contentType(MediaType.APPLICATION_PDF)

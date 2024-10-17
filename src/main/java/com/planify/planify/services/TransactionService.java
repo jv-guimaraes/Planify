@@ -50,14 +50,6 @@ public class TransactionService {
         }
     }
 
-    public List<Transaction> getAll() {
-        return transactionRepository.findAll();
-    }
-
-    public void deleteAll() {
-        transactionRepository.deleteAll();
-    }
-
     public List<Transaction> getByUser(User user) {
         return transactionRepository.findByUser(user);
     }

@@ -54,10 +54,4 @@ public class TransactionController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteAll() {
-        transactionService.deleteAll();
-        return ResponseEntity.noContent().build();
-    }
-
 }

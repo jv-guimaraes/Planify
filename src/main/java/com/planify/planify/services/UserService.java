@@ -64,20 +64,6 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    //    ------------------ CRUD ------------------
-    public UUID createUser(UserRequestDto userDto) {
-        var user = new User(
-                UUID.randomUUID(),
-                userDto.username(),
-                userDto.password(),
-                userDto.email(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                Instant.now(),
-                null);
-        return userRepository.save(user).getUserId();
-    }
-
     public Optional<User> getById(UUID userId) {
         return userRepository.findById(userId);
     }
@@ -111,19 +97,4 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public Optional<List<Transaction>> getTransactionsByUserId(UUID id) {
-        var user = userRepository.findById(id);
-        return user.map(transactionService::getByUser);
-    }
-
-    public Optional<List<Category>> getCategoriesByUserId(UUID id) {
-        var user = userRepository.findById(id);
-        return user.map(categoryService::getByUser);
-    }
-
-    public void deleteAll() {
-        transactionService.deleteAll();
-        categoryService.deleteAll();
-        userRepository.deleteAll();
-    }
 }

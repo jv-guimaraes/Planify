@@ -5,6 +5,7 @@ import com.planify.planify.entities.User;
 import com.planify.planify.repositories.TransactionRepository;
 import com.planify.planify.repositories.UserRepository;
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -25,9 +26,7 @@ import java.security.Principal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ReportService {
@@ -40,7 +39,11 @@ public class ReportService {
         this.transactionRepository = transactionRepository;
     }
 
-    public ByteArrayResource generateReport(List<Transaction> transactions) throws IOException {
+    public ByteArrayResource generateReport(Principal principal) throws IOException {
+        var user = userRepository.findByEmail(principal.getName()).orElseThrow();
+        var transactions = transactionRepository.findByUserAndDateBetweenOrderByDate(user,
+                LocalDate.of(LocalDate.now().getYear(), 1, 1), LocalDate.now());
+
         // Create PDF
         try (PDDocument document = new PDDocument()) {
 
@@ -81,6 +84,20 @@ public class ReportService {
                 contentStream.drawImage(image, 58, h * 0.95f - 660, 500, 300);
             }
 
+            // Page 3
+            page = new PDPage();
+            document.addPage(page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                // Add chart to PDF
+                var chartStream = monthlyCategoryIncomeChart(transactions);
+                PDImageXObject image = PDImageXObject.createFromByteArray(document, chartStream.toByteArray(), "chart");
+                contentStream.drawImage(image, 20, h * 0.95f - 320, 550, 300);
+
+                chartStream = monthlyCategoryExpenseChart(transactions);
+                image = PDImageXObject.createFromByteArray(document, chartStream.toByteArray(), "chart");
+                contentStream.drawImage(image, 20, h * 0.95f - 660, 550, 300);
+            }
+
             // Save the PDF
             ByteArrayOutputStream pdfStream = new ByteArrayOutputStream();
             document.save(pdfStream);
@@ -95,7 +112,6 @@ public class ReportService {
 
         var monthlyTotals = new HashMap<Month, Double>();
         transactions.stream()
-                .filter(t -> (t.getDate().getYear() == LocalDate.now().getYear()))
                 .filter(Transaction::isExpense)
                 .forEach(t -> {
                     var month = t.getDate().getMonth();
@@ -105,13 +121,13 @@ public class ReportService {
 
         for (Month m : Month.values()) {
             if (m.getValue() > LocalDate.now().getMonth().getValue()) break;
-            dataset.addValue((Number) monthlyTotals.getOrDefault(m, 0.0), "Gastos", m.getValue());
+            dataset.addValue((Number) monthlyTotals.getOrDefault(m, 0.0), "Despesa", m.getValue());
         }
 
         var chart = ChartFactory.createLineChart(
-                "Gasto mensal",
+                "Despesa mensal",
                 "Mês",
-                "Gastos",
+                "Despesa",
                 dataset);
 
         ByteArrayOutputStream chartStream = new ByteArrayOutputStream();
@@ -124,7 +140,6 @@ public class ReportService {
 
         var monthlyTotals = new HashMap<Month, Double>();
         transactions.stream()
-                .filter(t -> (t.getDate().getYear() == LocalDate.now().getYear()))
                 .filter(t -> !t.isExpense())
                 .forEach(t -> {
                     var month = t.getDate().getMonth();
@@ -134,13 +149,13 @@ public class ReportService {
 
         for (Month m : Month.values()) {
             if (m.getValue() > LocalDate.now().getMonth().getValue()) break;
-            dataset.addValue((Number) monthlyTotals.getOrDefault(m, 0.0), "Receita", m.getValue());
+            dataset.addValue((Number) monthlyTotals.getOrDefault(m, 0.0), "Renda", m.getValue());
         }
 
         var chart = ChartFactory.createLineChart(
-                "Receita mensal",
+                "Renda mensal",
                 "Mês",
-                "Receita",
+                "Renda",
                 dataset);
 
         ByteArrayOutputStream chartStream = new ByteArrayOutputStream();
@@ -151,31 +166,29 @@ public class ReportService {
     private ByteArrayOutputStream expenseByCategoryPieChart(List<Transaction> transactions) throws IOException {
         Map<String, Double> valueByCategory = new HashMap<>();
         transactions.stream()
-                .filter(t -> (t.getDate().getYear() == LocalDate.now().getYear()))
                 .filter(Transaction::isExpense)
                 .forEach(t -> {
                     var category = t.getCategory().getName();
                     var value = valueByCategory.getOrDefault(category, 0.0) + t.getValue().doubleValue();
                     valueByCategory.put(category, value);
                 });
-        var total = valueByCategory.values().stream().reduce(0.0, Double::sum);
 
-        DefaultPieDataset<String> dataset = new DefaultPieDataset<String>();
+        DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
         for (var e : valueByCategory.entrySet()) {
-            dataset.setValue(e.getKey(), e.getValue() / total);
+            dataset.setValue(e.getKey(), e.getValue());
         }
 
-        var chart = ChartFactory.createPieChart(
-                "Gasto por categoria",  // Chart title
+        JFreeChart chart = ChartFactory.createPieChart(
+                "Despesa por categoria",  // Chart title
                 dataset,                  // Dataset
                 true,                     // Show legend
                 true,
                 false
         );
 
-        var plot = (PiePlot) chart.getPlot();
+        var plot = (PiePlot<?>) chart.getPlot();
         plot.setLabelGenerator(new StandardPieSectionLabelGenerator(
-                "{0} = {2}", new DecimalFormat("0"), new DecimalFormat("0%")));
+                "{0} = {1} ({2})", new DecimalFormat("0"), new DecimalFormat("0%")));
 
         ByteArrayOutputStream chartStream = new ByteArrayOutputStream();
         ChartUtils.writeChartAsPNG(chartStream, chart, 500, 300);
@@ -185,31 +198,29 @@ public class ReportService {
     private ByteArrayOutputStream incomeByCategoryPieChart(List<Transaction> transactions) throws IOException {
         Map<String, Double> valueByCategory = new HashMap<>();
         transactions.stream()
-                .filter(t -> (t.getDate().getYear() == LocalDate.now().getYear()))
                 .filter(t -> !t.isExpense())
                 .forEach(t -> {
                     var category = t.getCategory().getName();
                     var value = valueByCategory.getOrDefault(category, 0.0) + t.getValue().doubleValue();
                     valueByCategory.put(category, value);
                 });
-        var total = valueByCategory.values().stream().reduce(0.0, Double::sum);
 
-        DefaultPieDataset<String> dataset = new DefaultPieDataset<String>();
+        DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
         for (var e : valueByCategory.entrySet()) {
-            dataset.setValue(e.getKey(), e.getValue() / total);
+            dataset.setValue(e.getKey(), e.getValue());
         }
 
-        var chart = ChartFactory.createPieChart(
-                "Receita por categoria",  // Chart title
+        JFreeChart chart = ChartFactory.createPieChart(
+                "Renda por categoria",  // Chart title
                 dataset,                  // Dataset
                 true,                     // Show legend
                 true,
                 false
         );
 
-        var plot = (PiePlot) chart.getPlot();
+        var plot = (PiePlot<?>) chart.getPlot();
         plot.setLabelGenerator(new StandardPieSectionLabelGenerator(
-                "{0} = {2}", new DecimalFormat("0"), new DecimalFormat("0%")));
+                "{0} = {1} ({2})", new DecimalFormat("0"), new DecimalFormat("0%")));
 
         ByteArrayOutputStream chartStream = new ByteArrayOutputStream();
         ChartUtils.writeChartAsPNG(chartStream, chart, 500, 300);
@@ -236,5 +247,74 @@ public class ReportService {
         });
         writer.flush();
         return new ByteArrayResource(outputStream.toByteArray());
+    }
+
+    public ByteArrayOutputStream monthlyCategoryIncomeChart(List<Transaction> transactions) throws IOException {
+        Map<Month, Map<String, Double>> map = new HashMap<>();
+        Set<String> categories = new HashSet<>();
+        for (Month m : Month.values()) map.put(m, new HashMap<>());
+        transactions.stream().filter(Transaction::isExpense)
+                .forEach(t -> {
+                    var month = t.getDate().getMonth();
+                    var category = t.getCategory().getName();
+                    categories.add(category);
+                    var value = map.get(month).getOrDefault(category, 0.0);
+                    map.get(month).put(category, value + t.getValue().doubleValue());
+
+                });
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        for (Month month : Month.values()) {
+            if (month.getValue() > LocalDate.now().getMonth().getValue()) break;
+            for (var category : categories) {
+                var value = map.get(month).getOrDefault(category, 0.0);
+                dataset.addValue(value, category, month.name().substring(0, 3));
+            }
+        }
+
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Despesa mensal por categoria",      // Chart title
+                "Categoria",               // X-axis label
+                "Despesa",                  // Y-axis label
+                dataset                   // Dataset
+        );
+
+        // Save chart as PNG
+        ByteArrayOutputStream chartStream = new ByteArrayOutputStream();
+        ChartUtils.writeChartAsPNG(chartStream, chart, 500, 300);
+        return chartStream;
+    }
+
+    public ByteArrayOutputStream monthlyCategoryExpenseChart(List<Transaction> transactions) throws IOException {
+        Map<Month, Map<String, Double>> map = new HashMap<>();
+        Set<String> categories = new HashSet<>();
+        for (Month m : Month.values()) map.put(m, new HashMap<>());
+        transactions.stream().filter(t -> !t.isExpense())
+                .forEach(t -> {
+                    var month = t.getDate().getMonth();
+                    var category = t.getCategory().getName();
+                    categories.add(category);
+                    var value = map.get(month).getOrDefault(category, 0.0);
+                    map.get(month).put(category, value + t.getValue().doubleValue());
+
+                });
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        for (Month month : Month.values()) {
+            if (month.getValue() > LocalDate.now().getMonth().getValue()) break;
+            for (var category : categories) {
+                var value = map.get(month).getOrDefault(category, 0.0);
+                dataset.addValue(value, category, month.name().substring(0, 3));
+            }
+        }
+
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Renda mensal por categoria",
+                "Categoria",
+                "Renda",
+                dataset
+        );
+
+        ByteArrayOutputStream chartStream = new ByteArrayOutputStream();
+        ChartUtils.writeChartAsPNG(chartStream, chart, 500, 300);
+        return chartStream;
     }
 }
