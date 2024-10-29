@@ -51,6 +51,10 @@ public class TransactionService {
         return transactionRepository.findByUser(user);
     }
 
+    public List<Transaction> findByUserOrderByDate(User user) {
+        return transactionRepository.findByUserOrderByDate(user);
+    }
+
     public Optional<Transaction> findById(UUID id) {
         return transactionRepository.findById(id);
     }

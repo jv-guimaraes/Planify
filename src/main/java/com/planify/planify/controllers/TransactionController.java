@@ -32,7 +32,7 @@ public class TransactionController {
     @GetMapping
     public ResponseEntity<List<TransactionResponseDto>> getAll(Principal principal) {
         var user = userService.findByEmail(principal.getName()).orElseThrow();
-        var transactions = transactionService.findByUser(user);
+        var transactions = transactionService.findByUserOrderByDate(user);
         return ResponseEntity.ok(transactions.stream().map(Transaction::toResponseDto).toList());
     }
 
