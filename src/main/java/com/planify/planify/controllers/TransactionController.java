@@ -50,4 +50,9 @@ public class TransactionController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Transaction> updateById(Principal principal, @PathVariable("id") UUID id, @RequestBody TransactionRequestDto dto) {
+        return ResponseEntity.of(transactionService.updateById(id, dto));
+    }
+
 }

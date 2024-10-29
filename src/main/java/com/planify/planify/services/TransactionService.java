@@ -67,4 +67,15 @@ public class TransactionService {
             return false;
         }
     }
+
+    public Optional<Transaction> updateById(UUID id, TransactionRequestDto dto) {
+        var res = transactionRepository.findById(id);
+        if (res.isPresent()) {
+            res.get().update(dto, categoryRepository.findById(dto.category()).orElseThrow());
+            transactionRepository.save(res.get());
+            return res;
+        } else {
+            return Optional.empty();
+        }
+    }
 }
