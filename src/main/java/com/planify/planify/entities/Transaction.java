@@ -40,6 +40,9 @@ public class Transaction {
     @Column(name = "is_expense")
     private boolean isExpense;
 
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus status = TransactionStatus.COMPLETE;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
@@ -51,7 +54,16 @@ public class Transaction {
     private Category category;
 
     public TransactionResponseDto toResponseDto() {
-        return new TransactionResponseDto(transactionId, date, sender, recipient, value, isExpense, category.toResponseDto());
+        return new TransactionResponseDto(
+                transactionId,
+                date,
+                sender,
+                recipient,
+                value,
+                isExpense,
+                category.toResponseDto(),
+                status
+        );
     }
 
     public void update(TransactionRequestDto dto, Category category) {

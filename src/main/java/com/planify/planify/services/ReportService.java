@@ -1,6 +1,7 @@
 package com.planify.planify.services;
 
 import com.planify.planify.entities.Transaction;
+import com.planify.planify.entities.TransactionStatus;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.TransactionRepository;
 import com.planify.planify.repositories.UserRepository;
@@ -41,8 +42,12 @@ public class ReportService {
 
     public ByteArrayResource generateReport(Principal principal) throws IOException {
         var user = userRepository.findByEmail(principal.getName()).orElseThrow();
-        var transactions = transactionRepository.findByUserAndDateBetweenOrderByDate(user,
-                LocalDate.of(LocalDate.now().getYear(), 1, 1), LocalDate.now());
+        var transactions = transactionRepository.findByUserAndStatusAndDateBetweenOrderByDate(
+                user,
+                TransactionStatus.COMPLETE,
+                LocalDate.of(LocalDate.now().getYear(), 1, 1),
+                LocalDate.now()
+        );
 
         // Create PDF
         try (PDDocument document = new PDDocument()) {
@@ -235,6 +240,7 @@ public class ReportService {
         } else {
             transactions = transactionRepository.findByUserOrderByDate(user);
         }
+        transactions = transactions.stream().filter(t -> t.getStatus() == TransactionStatus.COMPLETE).toList();
 
         // Gerar o CSV
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

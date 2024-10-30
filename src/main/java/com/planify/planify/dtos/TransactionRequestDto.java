@@ -1,5 +1,8 @@
 package com.planify.planify.dtos;
 
+import com.planify.planify.entities.Transaction;
+import com.planify.planify.entities.TransactionStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -10,6 +13,7 @@ public record TransactionRequestDto(
         String recipient,
         BigDecimal value,
         boolean isExpense,
-        UUID category
+        UUID category,
+        TransactionStatus status
 ) {
 }
