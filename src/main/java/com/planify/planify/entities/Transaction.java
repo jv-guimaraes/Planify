@@ -73,5 +73,6 @@ public class Transaction {
         this.value = dto.value();
         this.isExpense = dto.isExpense();
         this.category = category;
+        this.status = dto.status();
     }
 }
