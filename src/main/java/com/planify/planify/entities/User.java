@@ -52,8 +52,15 @@ public class User {
     private Instant updateTimestamp;
 
     public UserResponseDto toResponseDto() {
-        var responseTransactions = transactions.stream().map(Transaction::toResponseDto).toList();
-        var responseCategories = categories.stream().map(Category::toResponseDto).toList();
-        return new UserResponseDto(userId, username, email, responseTransactions, responseCategories, creationTimestamp, updateTimestamp);
+        return new UserResponseDto(
+                userId,
+                username,
+                email,
+                transactions.stream().map(Transaction::toResponseDto).toList(),
+                categories.stream().map(Category::toResponseDto).toList(),
+                goals.stream().map(Goal::toResponseDto).toList(),
+                creationTimestamp,
+                updateTimestamp
+        );
     }
 }

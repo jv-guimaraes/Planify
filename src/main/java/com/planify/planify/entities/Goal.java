@@ -2,6 +2,8 @@ package com.planify.planify.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.planify.planify.dtos.GoalRequestDto;
+import com.planify.planify.dtos.GoalResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -47,6 +49,21 @@ public class Goal {
     private User user;
 
     public BigDecimal getCurrentAmount() {
-        return BigDecimal.ZERO;
+        var total = BigDecimal.ZERO;
+        for (Transaction transaction : transactions) {
+            total = total.add(transaction.getValue());
+        }
+        return total;
+    }
+
+    public GoalResponseDto toResponseDto() {
+        return new GoalResponseDto(
+                name,
+                targetAmount,
+                targetDate,
+                category.toResponseDto(),
+                transactions.stream().map(Transaction::getTransactionId).toList(),
+                getCurrentAmount()
+        );
     }
 }

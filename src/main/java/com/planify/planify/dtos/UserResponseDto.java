@@ -10,6 +10,7 @@ public record UserResponseDto(
         String email,
         List<TransactionResponseDto> transactions,
         List<CategoryResponseDto> categories,
+        List<GoalResponseDto> goals,
         Instant creationTimestamp,
         Instant updateTimestamp
 ) {
