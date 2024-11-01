@@ -25,7 +25,7 @@ public class CategoryService {
     public Optional<Category> createCategory(UUID userId, CategoryRequestDto dto) {
         var user = userRepository.findById(userId);
         if (user.isPresent()) {
-            Category category = new Category(null, dto.name(), new ArrayList<>(), user.get());
+            Category category = new Category(null, dto.name(), new ArrayList<>(), new ArrayList<>(), user.get());
             categoryRepository.save(category);
             return Optional.of(category);
         } else {

@@ -25,8 +25,8 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<Category> createCategory(Principal principal, @RequestBody CategoryRequestDto dto) {
         var user = userService.findByEmail(principal.getName()).orElseThrow();
-        var id = categoryService.createCategory(user.getUserId(), dto);
-        return ResponseEntity.of(id);
+        var category = categoryService.createCategory(user.getUserId(), dto);
+        return ResponseEntity.of(category);
     }
 
     @GetMapping("{id}")

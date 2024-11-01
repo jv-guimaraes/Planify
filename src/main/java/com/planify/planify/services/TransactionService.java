@@ -50,6 +50,8 @@ public class TransactionService {
             transaction.setUser(user);
             transaction.setCategory(category);
             transaction.setStatus(dto.status());
+            transaction.setGoal(null);
+            transaction.setGoalContribution(false);
             transactionRepository.save(transaction);
             return Optional.of(transaction);
         } else {

@@ -53,6 +53,14 @@ public class Transaction {
     @JsonBackReference
     private Category category;
 
+    @Column(name = "is_goal_contribution")
+    private boolean isGoalContribution;
+
+    @ManyToOne
+    @JoinColumn(name = "goal_id")
+    @JsonBackReference
+    private Goal goal;
+
     public TransactionResponseDto toResponseDto() {
         return new TransactionResponseDto(
                 transactionId,

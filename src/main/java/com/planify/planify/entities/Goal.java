@@ -2,12 +2,13 @@ package com.planify.planify.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.planify.planify.dtos.CategoryResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,35 +16,37 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "tb_categories")
-public class Category implements Comparable<Category> {
+@Table(name = "tb_goals")
+public class Goal {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "category_id")
-    private UUID categoryId;
+    @Column(name = "goal_id")
+    private UUID goalId;
 
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "category")
+    @Column(name = "target_amount")
+    private BigDecimal targetAmount;
+
+    @Column(name = "target_date")
+    private LocalDate targetDate;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    @JsonBackReference
+    private Category category;
+
+    @OneToMany(mappedBy = "goal")
     @JsonManagedReference
     private List<Transaction> transactions;
-
-    @OneToMany(mappedBy = "category")
-    @JsonManagedReference
-    private List<Goal> goals;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
 
-    public CategoryResponseDto toResponseDto() {
-        return new CategoryResponseDto(categoryId, name);
-    }
-
-    @Override
-    public int compareTo(Category o) {
-        return name.compareTo(o.getName());
+    public BigDecimal getCurrentAmount() {
+        return BigDecimal.ZERO;
     }
 }
