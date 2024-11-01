@@ -1,10 +1,11 @@
 package com.planify.planify.services;
 
-import com.planify.planify.dtos.TransactionRequestDto;
+import com.planify.planify.dtos.transaction.TransactionRequestDto;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.TransactionStatus;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.CategoryRepository;
+import com.planify.planify.repositories.GoalRepository;
 import com.planify.planify.repositories.TransactionRepository;
 import com.planify.planify.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -25,18 +26,21 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final GoalRepository goalRepository;
     private static final Logger log = LoggerFactory.getLogger(TransactionService.class);
 
-    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
+    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository, CategoryRepository categoryRepository, GoalRepository goalRepository) {
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.goalRepository = goalRepository;
     }
 
     public Optional<Transaction> createTransaction(UUID userId, TransactionRequestDto dto) {
         var userRes = userRepository.findById(userId);
         var categoryRes = categoryRepository.findById(dto.category());
-        System.out.println(dto);
+        var goalRes = goalRepository.findById(dto.goal());
+
         if (userRes.isPresent() && categoryRes.isPresent()) {
             var user = userRes.get();
             var category = categoryRes.get();
@@ -50,8 +54,8 @@ public class TransactionService {
             transaction.setUser(user);
             transaction.setCategory(category);
             transaction.setStatus(dto.status());
-            transaction.setGoal(null);
-            transaction.setGoalContribution(false);
+            transaction.setGoal(goalRes.orElse(null));
+            transaction.setGoalContribution(dto.isGoalContribution());
             transactionRepository.save(transaction);
             return Optional.of(transaction);
         } else {

@@ -1,11 +1,8 @@
 package com.planify.planify.controllers;
 
-import com.planify.planify.dtos.GoalRequestDto;
-import com.planify.planify.dtos.GoalResponseDto;
-import com.planify.planify.dtos.TransactionResponseDto;
+import com.planify.planify.dtos.goal.GoalRequestDto;
+import com.planify.planify.dtos.goal.GoalResponseDto;
 import com.planify.planify.entities.Goal;
-import com.planify.planify.entities.Transaction;
-import com.planify.planify.repositories.GoalRepository;
 import com.planify.planify.repositories.UserRepository;
 import com.planify.planify.services.GoalService;
 import org.springframework.http.ResponseEntity;

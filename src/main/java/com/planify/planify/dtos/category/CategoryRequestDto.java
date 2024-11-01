@@ -1,4 +1,4 @@
-package com.planify.planify.dtos;
+package com.planify.planify.dtos.category;
 
 public record CategoryRequestDto(String name) {
 }

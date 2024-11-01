@@ -1,6 +1,5 @@
-package com.planify.planify.dtos;
+package com.planify.planify.dtos.transaction;
 
-import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.TransactionStatus;
 
 import java.math.BigDecimal;
@@ -14,6 +13,8 @@ public record TransactionRequestDto(
         BigDecimal value,
         boolean isExpense,
         UUID category,
-        TransactionStatus status
+        TransactionStatus status,
+        boolean isGoalContribution,
+        UUID goal
 ) {
 }

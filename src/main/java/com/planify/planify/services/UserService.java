@@ -1,6 +1,6 @@
 package com.planify.planify.services;
 
-import com.planify.planify.dtos.UserRequestDto;
+import com.planify.planify.dtos.user.UserRequestDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;

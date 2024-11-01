@@ -1,8 +1,8 @@
 package com.planify.planify.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.planify.planify.dtos.TransactionRequestDto;
-import com.planify.planify.dtos.TransactionResponseDto;
+import com.planify.planify.dtos.transaction.TransactionRequestDto;
+import com.planify.planify.dtos.transaction.TransactionResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -69,7 +69,7 @@ public class Transaction {
                 recipient,
                 value,
                 isExpense,
-                category.toResponseDto(),
+                category.toShortResponseDto(),
                 status
         );
     }

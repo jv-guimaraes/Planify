@@ -1,18 +1,13 @@
 package com.planify.planify.services;
 
-import com.planify.planify.dtos.CategoryRequestDto;
-import com.planify.planify.dtos.GoalRequestDto;
-import com.planify.planify.entities.Category;
+import com.planify.planify.dtos.goal.GoalRequestDto;
 import com.planify.planify.entities.Goal;
-import com.planify.planify.entities.Transaction;
-import com.planify.planify.entities.User;
 import com.planify.planify.repositories.CategoryRepository;
 import com.planify.planify.repositories.GoalRepository;
 import com.planify.planify.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 

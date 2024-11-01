@@ -1,5 +1,6 @@
-package com.planify.planify.dtos;
+package com.planify.planify.dtos.transaction;
 
+import com.planify.planify.dtos.category.CategoryShortResponseDto;
 import com.planify.planify.entities.TransactionStatus;
 
 import java.math.BigDecimal;
@@ -13,7 +14,7 @@ public record TransactionResponseDto(
         String recipient,
         BigDecimal value,
         boolean isExpense,
-        CategoryResponseDto category,
+        CategoryShortResponseDto category,
         TransactionStatus status
 ) {
 }

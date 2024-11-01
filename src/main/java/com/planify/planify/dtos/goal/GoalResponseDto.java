@@ -1,4 +1,6 @@
-package com.planify.planify.dtos;
+package com.planify.planify.dtos.goal;
+
+import com.planify.planify.dtos.category.CategoryShortResponseDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,7 +11,7 @@ public record GoalResponseDto(
         String name,
         BigDecimal targetAmount,
         LocalDate targetDate,
-        CategoryResponseDto category,
+        CategoryShortResponseDto category,
         List<UUID> transactions,
         BigDecimal currentAmount
 ) {

@@ -1,6 +1,6 @@
 package com.planify.planify.services;
 
-import com.planify.planify.dtos.CategoryRequestDto;
+import com.planify.planify.dtos.category.CategoryRequestDto;
 import com.planify.planify.entities.Category;
 import com.planify.planify.entities.User;
 import com.planify.planify.repositories.CategoryRepository;

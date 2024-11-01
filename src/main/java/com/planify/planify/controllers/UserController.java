@@ -1,7 +1,7 @@
 package com.planify.planify.controllers;
 
-import com.planify.planify.dtos.UserRequestDto;
-import com.planify.planify.dtos.UserResponseDto;
+import com.planify.planify.dtos.user.UserRequestDto;
+import com.planify.planify.dtos.user.UserResponseDto;
 import com.planify.planify.entities.Transaction;
 import com.planify.planify.entities.User;
 import com.planify.planify.services.UserService;

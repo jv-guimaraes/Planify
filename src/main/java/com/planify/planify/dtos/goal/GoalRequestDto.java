@@ -1,4 +1,4 @@
-package com.planify.planify.dtos;
+package com.planify.planify.dtos.goal;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

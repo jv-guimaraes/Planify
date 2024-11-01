@@ -2,8 +2,8 @@ package com.planify.planify.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.planify.planify.dtos.GoalRequestDto;
-import com.planify.planify.dtos.GoalResponseDto;
+import com.planify.planify.dtos.goal.GoalResponseDto;
+import com.planify.planify.dtos.goal.GoalShortResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -61,9 +61,13 @@ public class Goal {
                 name,
                 targetAmount,
                 targetDate,
-                category.toResponseDto(),
+                category.toShortResponseDto(),
                 transactions.stream().map(Transaction::getTransactionId).toList(),
                 getCurrentAmount()
         );
+    }
+
+    public GoalShortResponseDto toShortResponseDto() {
+        return new GoalShortResponseDto(goalId, name);
     }
 }

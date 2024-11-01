@@ -1,7 +1,7 @@
 package com.planify.planify.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.planify.planify.dtos.UserResponseDto;
+import com.planify.planify.dtos.user.UserResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -57,8 +57,8 @@ public class User {
                 username,
                 email,
                 transactions.stream().map(Transaction::toResponseDto).toList(),
-                categories.stream().map(Category::toResponseDto).toList(),
-                goals.stream().map(Goal::toResponseDto).toList(),
+                categories.stream().map(Category::toShortResponseDto).toList(),
+                goals.stream().map(Goal::toShortResponseDto).toList(),
                 creationTimestamp,
                 updateTimestamp
         );

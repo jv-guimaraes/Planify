@@ -2,7 +2,7 @@ package com.planify.planify.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.planify.planify.dtos.CategoryResponseDto;
+import com.planify.planify.dtos.category.CategoryShortResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,8 +38,8 @@ public class Category implements Comparable<Category> {
     @JsonBackReference
     private User user;
 
-    public CategoryResponseDto toResponseDto() {
-        return new CategoryResponseDto(categoryId, name);
+    public CategoryShortResponseDto toShortResponseDto() {
+        return new CategoryShortResponseDto(categoryId, name);
     }
 
     @Override
