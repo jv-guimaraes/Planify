@@ -39,7 +39,7 @@ public class TransactionService {
     public Optional<Transaction> createTransaction(UUID userId, TransactionRequestDto dto) {
         var userRes = userRepository.findById(userId);
         var categoryRes = categoryRepository.findById(dto.category());
-        var goalRes = goalRepository.findById(dto.goal());
+        var goal = dto.goal() == null ? null : goalRepository.findById(dto.goal()).orElseThrow();
 
         if (userRes.isPresent() && categoryRes.isPresent()) {
             var user = userRes.get();
@@ -54,7 +54,7 @@ public class TransactionService {
             transaction.setUser(user);
             transaction.setCategory(category);
             transaction.setStatus(dto.status());
-            transaction.setGoal(goalRes.orElse(null));
+            transaction.setGoal(goal);
             transaction.setGoalContribution(dto.isGoalContribution());
             transactionRepository.save(transaction);
             return Optional.of(transaction);
