@@ -15,6 +15,7 @@ public record TransactionResponseDto(
         BigDecimal value,
         boolean isExpense,
         CategoryShortResponseDto category,
-        TransactionStatus status
+        TransactionStatus status,
+        boolean isGoalContribution
 ) {
 }

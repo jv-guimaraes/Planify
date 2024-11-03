@@ -49,6 +49,11 @@ public class ReportService {
                 LocalDate.now()
         );
 
+        transactions = transactions.stream()
+                .filter(t -> t.getStatus() == TransactionStatus.COMPLETE)
+                .filter(t -> !t.isGoalContribution())
+                .toList();
+
         // Create PDF
         try (PDDocument document = new PDDocument()) {
 
@@ -240,7 +245,10 @@ public class ReportService {
         } else {
             transactions = transactionRepository.findByUserOrderByDate(user);
         }
-        transactions = transactions.stream().filter(t -> t.getStatus() == TransactionStatus.COMPLETE).toList();
+        transactions = transactions.stream()
+                .filter(t -> t.getStatus() == TransactionStatus.COMPLETE)
+                .filter(t -> !t.isGoalContribution())
+                .toList();
 
         // Gerar o CSV
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

@@ -70,7 +70,8 @@ public class Transaction {
                 value,
                 isExpense,
                 category.toShortResponseDto(),
-                status
+                status,
+                isGoalContribution
         );
     }
 
