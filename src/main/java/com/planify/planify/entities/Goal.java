@@ -58,6 +58,7 @@ public class Goal {
 
     public GoalResponseDto toResponseDto() {
         return new GoalResponseDto(
+                goalId,
                 name,
                 targetAmount,
                 targetDate,

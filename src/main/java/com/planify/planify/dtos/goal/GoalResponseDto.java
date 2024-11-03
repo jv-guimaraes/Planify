@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record GoalResponseDto(
+        UUID id,
         String name,
         BigDecimal targetAmount,
         LocalDate targetDate,
