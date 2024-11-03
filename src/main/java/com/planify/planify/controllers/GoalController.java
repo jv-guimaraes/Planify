@@ -42,7 +42,7 @@ public class GoalController {
         return ResponseEntity.ok(goals);
     }
 
-    @PutMapping("/{id}/balance")
+    @PutMapping("/balance/{id}")
     public ResponseEntity<String> updateBalance(Principal principal, @PathVariable("id") UUID id, @RequestBody GoalContributionDto contribution) {
         return goalService.updateBalance(principal, id, contribution);
     }

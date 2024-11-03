@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);  // Remove o prefixo 'Bearer ' do token
+            token = authHeader.substring(7);
             try {
                 username = jwtService.extractUsername(token);
             } catch (Exception e) {
